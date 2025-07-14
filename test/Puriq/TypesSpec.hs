@@ -4,6 +4,7 @@ module Puriq.TypesSpec (spec) where
 import Test.Hspec
 import Test.QuickCheck
 import Puriq.Types
+
 spec :: Spec
 spec = do
   describe "Valor" $ do
@@ -14,7 +15,7 @@ spec = do
       it "dos enteros diferentes no son iguales" $ do
         Entero 42 `shouldNotBe` Entero 24
 
-      it "entero y decimal con mismo valor no son iguales" do
+      it "entero y decimal con mismo valor no son iguales" $ do
         Entero 42 `shouldNotBe` Decimal 42.0
 
     describe "Show instance" $ do

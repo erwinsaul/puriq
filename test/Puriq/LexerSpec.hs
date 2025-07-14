@@ -17,17 +17,17 @@ spec = do
 
       -- Estos test fallarán inicialmente hasta implementar el lexer
 
-      pending "tokenizar operadors básicos" $ do
-        tokenizar "+" `shouldBe` [TokOperador "+", TokFin]
-      
-      pending "tokenizar expresiones simples" $ do
-        tokenizar "2 + 3" `shouldBe` [TokEntero 2, TokOperador "+", TokEntero 3, TokFin]
-
+      it "tokenizar operadors básicos" $ do
+        --tokenizar "+" `shouldBe` [TokOperador "+", TokFin]
+        pending
+      it "tokenizar expresiones simples" $ do
+        --tokenizar "2 + 3" `shouldBe` [TokEntero 2, TokOperador "+", TokEntero 3, TokFin]
+        pending
     describe "casos edge" $ do
-      pending "maneja espacios blancos" $ do
-        tokenizar " 42 " `shouldBe` [TokEntero 42, TokFin]
-
-      pending "maneja múltiples espacios" $ do
-        tokenizar "2  +  3" `shouldBe` [TokEntero 2, TokOperador "+", TokFin]
-   
+      it "maneja espacios blancos" $ do
+        --tokenizar " 42 " `shouldBe` [TokEntero 42, TokFin]
+        pending
+      it "maneja múltiples espacios" $ do
+        --tokenizar "2  +  3" `shouldBe` [TokEntero 2, TokOperador "+", TokFin]
+        pending
         

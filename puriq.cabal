@@ -28,28 +28,8 @@ source-repository head
 library
   exposed-modules:
       Lib
-      Puriq.Evaluator.Builtins
-      Puriq.Evaluator.Core
-      Puriq.Evaluator.Environment
-      Puriq.Evaluator.Functions
-      Puriq.IO.Console
-      Puriq.IO.Files
-      Puriq.IO.Modules
       Puriq.Lexer
-      Puriq.Lexer.Keywords
-      Puriq.Lexer.Scanner
-      Puriq.Lexer.Tokens
-      Puriq.Parser.AST
-      Puriq.Parser.Combinators
-      Puriq.Parser.Expressions
-      Puriq.Parser.Statements
-      Puriq.REPL.Commands
-      Puriq.REPL.History
-      Puriq.REPL.Interactive
       Puriq.Types
-      Puriq.Utils.Config
-      Puriq.Utils.Debug
-      Puriq.Utils.Pretty
   other-modules:
       Paths_puriq
   autogen-modules:
@@ -95,6 +75,7 @@ test-suite puriq-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      Puriq.EvaluatorSpec
       Puriq.LexerSpec
       Puriq.TypesSpec
       Paths_puriq
