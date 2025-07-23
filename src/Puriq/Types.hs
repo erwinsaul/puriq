@@ -19,7 +19,7 @@ data Token
     = TokEntero Int
     | TokDecimal Double
     | TokCadena String
-    | TokBooleando Bool
+    | TokBooleano Bool
     | TokIdentificador String
     | TokOperador String
     | TokParenIzq
