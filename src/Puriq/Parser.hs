@@ -99,5 +99,39 @@ expresion = do
     exp <- termino
     expresionResto expr
 
+expresionResto :: Expresion -> Parser Expresion
+expresionResto left = do
+    token <- peek
+    case token of
+        TokOperador "+" -> do
+            advance
+            right <- termino
+            expresionResto (ExpBinaria "+" left right)
+        TokOperador "-" -> do
+            advance
+            right <- termino
+            expresionResto (ExpBinaria "-" left right)
+        _ -> return left
+
+-- termino -> factor ( ( "*" | "/") factor)*
+termino :: Parser Expresion
+termino = do
+    expr <- factor
+    terminoResto expr
+
+terminoResto :: Expresion -> Parser Expresion
+terminoResto left = do
+    token <- peek
+    case token of
+        TokOperador "*" -> do
+            advance
+            right <- factor
+            terminoResto (ExpBinaria "*" left right)
+        TokOperador "/" -> do
+            advance
+            right <- factor
+            terminoResto (ExpBinaria "/" left right)
+        _ -> return left
+
     
     
