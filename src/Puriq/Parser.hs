@@ -133,5 +133,41 @@ terminoResto left = do
             terminoResto (ExpBinaria "/" left right)
         _ -> return left
 
+-- factor -> NUMERO | "(" expresion ")" | "-" factor
+factor :: Parser Expresion
+factor = do
+    token <- peek
+    case token of
+        TokEntero n -> do
+            advance
+            return (ExpLiteral (Entero n))
+        TokDecimal n -> do
+            advance
+            return (ExpLiteral (Decimal n))
+        TokParenIzq -> do
+            advance
+            expr <- expresion
+            consume TokParenDer "Se esperaba ')' después de la expresión"    
+            return expr -- No necesitamos ExpAgrupada, los parentesis ya están implicitos
+        TokOperador "-" -> do
+            advance
+            expr <- factor
+            return (ExpUnaria "-" expr)
+        _ -> Parser $ \_ -> Left (ErrorToken "Se esperaba un número, '(' o '-'")
+            
+-- Función Auxiliar para parsear desde string (require lexer)
+parserFromString :: String -> ParseResult Expresion
+parseFromString input =
+    case tokenize input of
+        Left err -> Left (ErrorSintaxis $ "Error de lexer: " ++ err)  
+        Right tokens -> parseExpression tokens
+  where
+  -- Placeholder para el lexer - esto se implementará en el módulo Lexer
+  tokenize :: String -> Either String [Token]
+  tokenize _ = Left "Lexer no implementado aún"
     
-    
+-- Función auxiliar para mostrar errores de manera amigable
+showParseError err = case err of
+  ErrorToken msg -> "Error de sintaxis: " ++ msg
+  ErrorEOF msg -> "Error: fin inesperado de la expresión - " ++ msg
+  ErrorSintaxis msg -> "Error de sintaxis: " ++ msg
