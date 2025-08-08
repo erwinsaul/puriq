@@ -1,4 +1,10 @@
-module Puriq.Parser where
+module Puriq.Parser 
+    ( parseExpression
+    , parseFromString
+    , ParserError(..)
+    , ParseResult
+    , showParseError
+    )where
 
 import Puriq.Types
 
@@ -26,9 +32,9 @@ instance Functor Parser where
     fmap f (Parser p) = Parser $ \s ->
         case p s of 
             Left err -> Left err
-            Right (a, s') -> Right (f, a, s')
+            Right (a, s') -> Right (f  a, s')
 
-instance Aplicative Parser where
+instance Applicative Parser where
     pure a = Parser $ \s -> Right (a, s)
     Parser pf <*> Parser pa = Parser $ \s ->
         case pf s of
@@ -54,19 +60,19 @@ runParser (Parser p) tokens =
         Right (result, _) -> Right result
 
 -- Parser principal para expresiones
-parseExpression :: [Toekn] -> ParseResult Expression
+parseExpression :: [Token] -> ParseResult Expresion
 parseExpression tokens = runParser expresion tokens
 
 -- Obtener el token actual sin consumirlo
 peek :: Parser Token
-peek = Parser $ \s@(ParserState st pos) ->
+peek = Parser $ \s@(ParserState ts pos) ->
     if pos >= length ts
     then Right (TokFin, s)
     else Right (ts !! pos, s)
 
 -- Consumir el token actual
 advance :: Parser Token
-advance = Parse $ \(ParserState ts pos) ->
+advance = Parser $ \(ParserState ts pos) ->
     if pos >= length ts
     then Right (TokFin, ParserState ts pos)
     else Right (ts !! pos, ParserState ts (pos+1))
@@ -84,7 +90,7 @@ check expected = do
     return (current == expected)
 
 -- Consumir un token si coincide, sino error
-consume :: Token -> String -> Parser Toke
+consume :: Token -> String -> Parser Token
 consume expected msg = do
     current <- peek
     if current == expected
@@ -97,7 +103,7 @@ consume expected msg = do
 expresion :: Parser Expresion
 expresion = do
     exp <- termino
-    expresionResto expr
+    expresionResto exp
 
 expresionResto :: Expresion -> Parser Expresion
 expresionResto left = do
@@ -156,7 +162,7 @@ factor = do
         _ -> Parser $ \_ -> Left (ErrorToken "Se esperaba un número, '(' o '-'")
             
 -- Función Auxiliar para parsear desde string (require lexer)
-parserFromString :: String -> ParseResult Expresion
+parseFromString :: String -> ParseResult Expresion
 parseFromString input =
     case tokenize input of
         Left err -> Left (ErrorSintaxis $ "Error de lexer: " ++ err)  

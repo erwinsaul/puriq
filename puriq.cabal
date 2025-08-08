@@ -29,6 +29,8 @@ library
   exposed-modules:
       Lib
       Puriq.Lexer
+      Puriq.Parser
+      Puriq.Parser.Utils
       Puriq.Types
   other-modules:
       Paths_puriq
@@ -77,6 +79,7 @@ test-suite puriq-test
   other-modules:
       Puriq.EvaluatorSpec
       Puriq.LexerSpec
+      Puriq.Parser.ParserSpec
       Puriq.TypesSpec
       Paths_puriq
   autogen-modules:

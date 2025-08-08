@@ -5,8 +5,15 @@ import Puriq.Types
 import Puriq.Parser
 
 --Helper para crear tokens fácilmente
-num :: Double -> Token
-num = TOperador
+entero :: Int -> Expresion
+entero n = ExpLiteral (Entero n)
+
+decimal :: Double -> Expresion
+decimal n = ExpLiteral (Decimal n)
+
+-- Helper para operaciones binarias
+binaria :: String -> Expresion -> Expresion -> Expresion
+binaria = ExpBinaria
 
 -- Test del parser
 spec :: Spec
@@ -15,31 +22,45 @@ spec = do
 
     describe "Números simples" $ do
       it "parsea número entero" $ do
-        let tokens = [num 42, TEOF]
+        let tokens = [TokEntero 42, TokFin]
         parseExpression tokens `shouldBe` Right (Numero 42)
 
       it "parsea número decimal" $ do
-        let tokens = [num 3.14, TEOF]
+        let tokens = [TokDecimal 3.14, TokFin]
         parseExpression tokens `shouldBe` Right (Numero 3.14)
 
     describe "Operaciones binarias" $ do
       it "parsea suma simple" $ do
-        let tokens = [num 2, op Suma, num 3, TOEF]
-        parseExpression tokens `shouldBe` Right (Binaria Resta (Numero 5) (Numero 2))
+        let tokens = [TokEntero 2, TokOperador "+", TokEntero 3, TokFin]
+        parseExpression tokens `shouldBe` Right (binaria "+" (entero 2) (entero 3))
 
       it "parsea resta simple" $ do
-        let tokens = [num 4, op Mult, num 6, TEOF]
-        parseExpression tokens `shouldBe` Right (Binaria Mult (Numero 4) (Numero 6) )
-
+        let tokens = [TokEntero 5, TokOperador "-", TokOperador 2, TokFin]
+        parseExpression tokens `shouldBe` Right (binaria "-" (entero 5) (entero 2))
+      it "parsea multiplicación simple" $ do
+        let tokens = [TokEntero 4, TokOperador "*", TokEntero 6, TokFin]
+        parseExpression tokens `shouldBe` Right (binaria "*" (entero 4) (entero 6))
+        
       it "parsea división simple" $ do
-        let tokens = [num 8, op Div, num 2, TEOF]
-        parseExpression tokens `shouldBe` Right (Binaria Div (Numero 8) (Numero 2) )
+        let tokens = [TokEntero 8, TokOperador "/", TokEntero 2, TokFin]
+        parseExpression tokens `shouldBe` Right (binaria "/" (entero 8) (entero 2) )
+    describe "Operaciones con números decimales" $do
+      it "suma con decimales" $ do
+        let tokens = [TokDecimal 2.5, TokOperador "+", TokDecimal 1.3, TokFin]
+        parseExpression tokens `shouldBe` Right (binaria "+" (decimal 2.5) (decimal 1.3))
 
+      it "mezcla enteros y decimales" $ do
+        let tokens = [TokDecimal 2.5, TokOperador "+", TokDecimal 1.3, TokFin]
+        parseExpression tokens `shouldBe` Right (binaria "+" (decimal 2.5) (decimal 1.3))
+    
     describe "Precedencia de operadores" $ do
       it "multiplicación tiene mayor precedencia que suma" $ do
-        let tokens = [num 2, op Suma, num 3, op Mult, num 4, TEOF]
-        let expected = Binaria Suma (Numero 2) (Binaria Mult (Numero 3) (Numero 4) )
+        let tokens = [TokEntero 2, TokOperador "+" , TokEntero 3, TokOperador "*", TokEntero 4, TokFin]
+        let expected = binaria "+" (entero 2) (binaria "*" (entero 3) (entero 4))
         parseExpression tokens `shouldBe` Right expected
+
+--Falta corregir desde aqui
+
 
       it "divisón tiene mayor precedencia que resta" $ do
         let tokens = [num 10, op Resta, num 6, op Div, num 2, TEOF]
@@ -82,7 +103,7 @@ spec = do
         let tokens = [num 2, op Suma, TEOF]
         case parseExpression tokens of
           Left (ErrorToken _) -> True `shouldBe` True
-          - -> extectationFailures "Se esperaba ErrorToken"
+          _ -> extectationFailures "Se esperaba ErrorToken"
 
       it "detecta paréntesis sin cerrar" $ do
         let tokens = [TParenIzq, num 5, TEOF]
@@ -98,4 +119,17 @@ spec = do
         let mult = Binaria Mult suma (Numero 4)
         let div' = Binaria Div (Numero 5) (Numero 2)
         let expected = Binaria Resta mult div'
-        parseExpression tokens `shouldBe` Right expected                 
+        parseExpression tokens `shouldBe` Right expected 
+
+      it "expresión con muchos niveles de precendencia" $ do
+        -- -2 * 3 + 4 / 2 - 1
+        let tokens = [ TokOperador "-", TokEntero 2, TokOperador "*", TokEntero 3,
+                       TokOperador "+", TokEntero 4, TokOperador "/", TokEntero 2,
+                       TokOperador "-", TokEntero 1, TokFin ]
+
+        let neg2 = ExpUnaria "-" (entero 2)
+        let mult = binaria "*" neg2 (entero 3)
+        let div' = binaria "/" (entero 4) (entero 2)
+        let suma = binaria "+" mult div'
+        let expected = binaria "-" suma (entero 1)
+        parseExpression tokens `shouldBe` Right expected                
