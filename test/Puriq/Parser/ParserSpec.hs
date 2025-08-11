@@ -23,11 +23,11 @@ spec = do
     describe "Números simples" $ do
       it "parsea número entero" $ do
         let tokens = [TokEntero 42, TokFin]
-        parseExpression tokens `shouldBe` Right (Numero 42)
+        parseExpression tokens `shouldBe` Right (entero 42)
 
       it "parsea número decimal" $ do
         let tokens = [TokDecimal 3.14, TokFin]
-        parseExpression tokens `shouldBe` Right (Numero 3.14)
+        parseExpression tokens `shouldBe` Right (decimal 3.14)
 
     describe "Operaciones binarias" $ do
       it "parsea suma simple" $ do
@@ -35,7 +35,7 @@ spec = do
         parseExpression tokens `shouldBe` Right (binaria "+" (entero 2) (entero 3))
 
       it "parsea resta simple" $ do
-        let tokens = [TokEntero 5, TokOperador "-", TokOperador 2, TokFin]
+        let tokens = [TokEntero 5, TokOperador "-", TokEntero 2, TokFin]
         parseExpression tokens `shouldBe` Right (binaria "-" (entero 5) (entero 2))
       it "parsea multiplicación simple" $ do
         let tokens = [TokEntero 4, TokOperador "*", TokEntero 6, TokFin]
@@ -59,66 +59,69 @@ spec = do
         let expected = binaria "+" (entero 2) (binaria "*" (entero 3) (entero 4))
         parseExpression tokens `shouldBe` Right expected
 
---Falta corregir desde aqui
-
-
       it "divisón tiene mayor precedencia que resta" $ do
-        let tokens = [num 10, op Resta, num 6, op Div, num 2, TEOF]
-        let expected = Binaria Resta (Numero 10) (Binaria Div (Numero 6) (Numero 2))
+        let tokens = [TokEntero 10, TokOperador "-", TokEntero 6, TokOperador "/", TokEntero 2, TokFin]
+        let expected = binaria "-" (entero 10) (binaria "/" (entero 6) (entero 2))
         parseExpression tokens `shouldBe` Right expected
 
       it "operadores del mimos nivel asociativos por la izquierda" $ do
-        let tokens = [num 10, op Resta, num 3, opo Resta, num 2, TEOF]
-        let expected = Binaria Resta (Binaria Resta (Numero 10) (Numero 3)) (Numero 2)
+        let tokens = [TokEntero 10, TokOperador "-", TokEntero 3, TokOperador "-", TokEntero 2, TokEntero 2, TokFin]
+        let expected = binaria "-" (binaria "-" (entero 10) (entero 3)) (entero 2)
         parseExpression tokens `shouldBe` Right expected
 
     describe "Paréntesis" $ do
       it "parse expresión simple entre paréntesis" $ do
-        let tokens = [TParenIzq, num 5, TParenDer, TEOF]
-        parseExpression tokens `shouldBe` Right (Agrupada (Numero 5))
+        let tokens = [TokParenIzq, TokEntero 5, TokParenDer, TokFin]
+        parseExpression tokens `shouldBe` Right (entero 5)
 
       it "paréntesis cambian precendencia" $ do
-        let tokens = [TParenIzq, num 2, op Suma, num 3, TParenDer, op Mult, num 4, TEOF]
-        let expected = Binaria Mult (Agrupada (Binaria Suma (Numero 2) (Numero 3))) (Numero 4)
+        let tokens = [TokParenIzq, TokEntero 2, TokOperador "+", TokEntero 3, TokParenDer, TokOperador "*", TokEntero 4, TokFin]
+        let expected = binaria "*" (binaria "+" (entero 2) (entero 3)) (entero 4)
         parseExpression tokens `shouldBe` Right expected
 
       it "maneja paréntesis anidados" $ do
-        let tokens = [TParenIzq, TParenIzq, num 1, op Suma, num2, TParenDer, op Mult, num 3, TParenDer, TEOF]
-        let inner = Agrupada (Binaria Suma (Numero 1) (Numero2))
-        let extected = Agrupada (Binaria Mult inner (Numero 3))
+        let tokens = [TokParenIzq, TokParenIzq, TokEntero 1, TokOperador "+", TokEntero 2, TokParenDer, TokOperador "*", TokEntero 3, TokParenDer, TokFin]
+        let inner = binaria "+" (entero 1) (entero 2)
+        let expected = binaria "*" inner (entero 3)
         parseExpression tokens `shouldBe` Right expected
 
     describe "Operadores unarios" $ do
       it "parsea número negativo" $ do
-        let tokens = [TMenos, num 5, TEOF]
-        parseExpression tokens `shouldBe` Right (Unaria Negativa (Numero 5))
+        let tokens = [TokOperador "-", TokEntero 5, TokFin]
+        parseExpression tokens `shouldBe` Right (ExpUnaria "-" (entero 5))
 
       it "maneja negación en expresiones complejas" $ do
-        let tokens = [TMenos, num 2, op Suma, num 3, TEOF]
-        let expected = Binaria Suma (Unaria Negativo (Numero 2)) (Numero 3)
+        let tokens = [TokOperador "-", TokEntero 2, TokOperador "+", TokEntero 3, TokFin]
+        let expected = binaria "+" (ExpUnaria "-" (entero 2)) (entero 3)
         parseExpression tokens `shouldBe` Right expected
 
     describe "Errores de sintaxis" $ do
-      it "detecta token inesperado" $ do
-        let tokens = [num 2, op Suma, TEOF]
+      it "detecta operador sin operando derecho" $ do
+        let tokens = [TokEntero 2, TokOperador "+", TokFin]
         case parseExpression tokens of
           Left (ErrorToken _) -> True `shouldBe` True
-          _ -> extectationFailures "Se esperaba ErrorToken"
+          _ -> expectationFailure "Se esperaba ErrorToken"
 
       it "detecta paréntesis sin cerrar" $ do
-        let tokens = [TParenIzq, num 5, TEOF]
+        let tokens = [TokParenIzq, TokEntero 5, TokFin]
         case parseExpression tokens of
           Left (ErrorToken _) -> True `shouldBe` True
-          _ -> extectationFailure "Se esperaba ErrorToken"
+          _ -> expectationFailure "Se esperaba ErrorToken"
+
+      it "detecta operador al inicio sin negación" $ do
+        let tokens = [TokOperador "+", TokEntero 5, TokFin]
+        case parseExpression tokens of
+          Left (ErrorToken _) -> True `shouldBe` True
+          _ -> expectationFailure "Se esperaba ErrorToken"
 
     describe "Expresiones complejas" $ do
       it "parse expresión aritmética compleja" $ do
         -- (2+3) * 4 - 5 / 2
-        let tokens = [ TPareIzq, num 2, op Suma, num 3 TParenDer, op Mult, num 4, op Resta, num 5, op Div, num 2, TEOF]
-        let suma = Agrupada (Binaria Suma (Numero 2) (Numero 3))
-        let mult = Binaria Mult suma (Numero 4)
-        let div' = Binaria Div (Numero 5) (Numero 2)
-        let expected = Binaria Resta mult div'
+        let tokens = [ TokParenIzq, TokEntero 2, TokOperador "+", TokEntero 3, TokParenDer, TokOperador "*", TokEntero 4, TokOperador "-", TokEntero 5, TokOperador "/", TokEntero 2, TokFin]
+        let suma = binaria "+" (entero 2) (entero 3)
+        let mult = binaria "*" suma (entero 4)
+        let div' = binaria "/" (entero 5) (entero 2)
+        let expected = binaria "-" mult div'
         parseExpression tokens `shouldBe` Right expected 
 
       it "expresión con muchos niveles de precendencia" $ do
