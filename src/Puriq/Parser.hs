@@ -7,6 +7,7 @@ module Puriq.Parser
     )where
 
 import Puriq.Types
+import Puriq.Lexer (tokenizar)
 
 -- Estado del parser: Lista de tokens y posicion actual
 
@@ -163,15 +164,8 @@ factor = do
             
 -- Función Auxiliar para parsear desde string (require lexer)
 parseFromString :: String -> ParseResult Expresion
-parseFromString input =
-    case tokenize input of
-        Left err -> Left (ErrorSintaxis $ "Error de lexer: " ++ err)  
-        Right tokens -> parseExpression tokens
-  where
-  -- Placeholder para el lexer - esto se implementará en el módulo Lexer
-  tokenize :: String -> Either String [Token]
-  tokenize _ = Left "Lexer no implementado aún"
-    
+parseFromString input = parseExpression (tokenizar input)
+
 -- Función auxiliar para mostrar errores de manera amigable
 showParseError err = case err of
   ErrorToken msg -> "Error de sintaxis: " ++ msg
