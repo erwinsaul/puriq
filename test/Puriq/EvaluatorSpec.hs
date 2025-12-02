@@ -28,4 +28,37 @@ spec = do
           Left err -> expectationFailure $ "Error de parsing: " ++ show err
           Right expr -> evaluar expr `shouldBe` Right (Entero 5)
     
+      it "suma dos decimales" $ do
+        case parseFromString "2.5 + 3.7" of
+          Left err -> expectationFailure $ "Error de Parsing: " ++ show err
+          Right expr -> evaluar expr `shouldBe` Right (Decimal 6.2)
       
+      it "suma entero y decimal" $ do
+        case parseFromString "2 + 3.5" of
+          Left err -> expectationFailure $ "Error de parsing: " ++ show err
+          Right expr -> evaluar expr `shouldBe` Right (Decimal 5.5)
+    
+    describe "resta" $ do
+      it "resta dos enteros" $ do
+        case parseFromString "10-3" of
+          Left err -> expectationFailure $ "Error de parsing: " ++ show err
+          Right expr -> evaluar expr `shouldBe` Right (Entero 7)
+
+      it "resta con resultado negativo" $ do
+        case parseFromString "3-10" of
+          Left err -> expectationFailure $ "Error de parsing: " ++ show err
+          Right expr -> evaluar expr `shouldBe` Right (Entero (-7))
+
+    describe "multiplicacion" $ do
+      it "multiplica dos enteros" do
+        case parseFromString "2 * 3" of
+          Left err -> expectationFailure $ "Error de parsing: " ++ show err
+          Right expr ->evaluar expr `shouldBe` Right (Entero 6)
+      
+      it "multiplica entero y decimal" $ do
+        case parseFromString "2 * 3.5" of
+          Left err -> expectationFailure $ "Error de parsing: " ++ show err
+          Right expr -> evaluar expr `shouldBe` Right (Decimal 7.0)
+
+
+          
