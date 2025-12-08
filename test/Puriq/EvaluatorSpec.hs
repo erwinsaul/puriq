@@ -59,6 +59,41 @@ spec = do
         case parseFromString "2 * 3.5" of
           Left err -> expectationFailure $ "Error de parsing: " ++ show err
           Right expr -> evaluar expr `shouldBe` Right (Decimal 7.0)
+    
+    describe "division" $ do
+      it "divide dos enteros (retorna decimal)" $ do
+        case parseFromString "10 / 2" of
+          Left err -> expectationFailure $ "Error de parsing" ++ show err
+          Right expr -> evaluar expr `shouldBe` Right (Decimal 5.0)
+      
+      it "divide con resultado decimal" $ do
+        case parseFromString "7 / 2" of
+          Left err -> expectationFailure $ "Error de parsing" ++ show err
+          Right expr -> evaluar expr `shouldBe` Right (Decimal 3.5)
 
+      it "detecta division por cero (entero)" $ do
+        case parseFromString "5 / 0" of
+          Left err -> expectationFailure $ "Error de parsing" ++ show err
+          Right expr -> evaluar expr `shouldBe` Left ErrorDivisionPorCero
 
+      it "detecta división por cero (decimal)" $ do
+        case parseFromString "5.5 / 0.0" of
+          Left err -> expectationFailure $ "Error de parsing" ++ show err
+          Right expr -> evaluar expr `shouldBe` Left ErrorDivisionPorCero
+    
+    describe "operador unario" $ do
+      it "niega un entero" $ do
+        case parseFromString "-5" of
+          Left err -> expectationFailure $ "Error de parsing: " ++ show err
+          Right expr -> evaluar expr `shouldBe` Right (Entero (-5))
+        
+      it "niega un decimal" $ do
+        case parseFromString "-3.14" of
+          Left err -> expectationFailure $ "Error de parsing" ++ show err
+          Right expr -> evaluar expr `shouldBe` Right (Decimal (-3.14))
+      
+      it "doble negacion" $ do
+        case parseFromString "--5" of
+          Left err -> expectationFailure $ "Error de parsing: " ++ show err
+          Right expr -> evaluar expr `shouldBe` Right (Entero 5)
           
