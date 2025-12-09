@@ -52,7 +52,7 @@ aplicarOperadorBinario "/" (Entero a) (Decimal b) = Right (Decimal (fromIntegral
 aplicarOperadorBinario "/" (Decimal a) (Entero b) = Right (Decimal (a / fromIntegral b))
 
 -- En caso de que el operador no sea reconocido
-aplicacionOperadorBinario _ _ = Left (ErrorOperadorDesconocido op)
+aplicarOperadorBinario op _ _ = Left (ErrorOperadorDesconocido op)
 
 aplicarOperadorUnario :: String -> Valor -> Either EvalError Valor
 aplicarOperadorUnario "-" (Entero n) = Right (Entero (-n))

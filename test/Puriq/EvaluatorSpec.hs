@@ -23,7 +23,7 @@ spec = do
           Right expr -> evaluar expr `shouldBe` Right (Decimal 3.14)
     
     describe "suma" $ do
-      it "suma dos enteros" do
+      it "suma dos enteros" $ do
         case parseFromString "2 + 3" of
           Left err -> expectationFailure $ "Error de parsing: " ++ show err
           Right expr -> evaluar expr `shouldBe` Right (Entero 5)
@@ -50,7 +50,7 @@ spec = do
           Right expr -> evaluar expr `shouldBe` Right (Entero (-7))
 
     describe "multiplicacion" $ do
-      it "multiplica dos enteros" do
+      it "multiplica dos enteros" $ do
         case parseFromString "2 * 3" of
           Left err -> expectationFailure $ "Error de parsing: " ++ show err
           Right expr ->evaluar expr `shouldBe` Right (Entero 6)
@@ -63,22 +63,22 @@ spec = do
     describe "division" $ do
       it "divide dos enteros (retorna decimal)" $ do
         case parseFromString "10 / 2" of
-          Left err -> expectationFailure $ "Error de parsing" ++ show err
+          Left err -> expectationFailure $ "Error de parsing: " ++ show err
           Right expr -> evaluar expr `shouldBe` Right (Decimal 5.0)
       
       it "divide con resultado decimal" $ do
         case parseFromString "7 / 2" of
-          Left err -> expectationFailure $ "Error de parsing" ++ show err
+          Left err -> expectationFailure $ "Error de parsing: " ++ show err
           Right expr -> evaluar expr `shouldBe` Right (Decimal 3.5)
 
       it "detecta division por cero (entero)" $ do
         case parseFromString "5 / 0" of
-          Left err -> expectationFailure $ "Error de parsing" ++ show err
+          Left err -> expectationFailure $ "Error de parsing: " ++ show err
           Right expr -> evaluar expr `shouldBe` Left ErrorDivisionPorCero
 
       it "detecta división por cero (decimal)" $ do
         case parseFromString "5.5 / 0.0" of
-          Left err -> expectationFailure $ "Error de parsing" ++ show err
+          Left err -> expectationFailure $ "Error de parsing: " ++ show err
           Right expr -> evaluar expr `shouldBe` Left ErrorDivisionPorCero
     
     describe "operador unario" $ do
@@ -96,4 +96,24 @@ spec = do
         case parseFromString "--5" of
           Left err -> expectationFailure $ "Error de parsing: " ++ show err
           Right expr -> evaluar expr `shouldBe` Right (Entero 5)
-          
+
+    describe "expresiones complejas" $ do
+      it "respeta precedencia: 2 + 3 * 4 = 14" $ do
+        case parseFromString "2 + 3 * 4" of
+          Left err -> expectationFailure $ "Error de parsing: " ++ show err
+          Right expr -> evaluar expr `shouldBe` Right (Entero 14)
+      
+      it "respeta precedencia con division: 10 - 6 / 2 = 7" $ do
+        case parseFromString "10 - 6 / 2" of
+          Left err -> expectationFailure $ "Error de parsing: " ++ show err
+          Right expr -> evaluar expr `shouldBe` Right (Decimal 7.0)
+      
+      it "evalua expresion con parentesis: (2 + 3 * 4) = 20" $ do
+        case parseFromString "(2 + 3) * 4" of
+          Left err -> expectationFailure $ "Error de parsing: " ++ show err
+          Right expr -> evaluar expr `shouldBe` Right (Entero 20)
+      
+      it "evalua expresion compleja: 2 + 3 * (4 - 1) = 11" $ do
+        case parseFromString "2 + 3 * (4 - 1)" of
+          Left err -> expectationFailure $ "Error de parsing: " ++ show err
+          Right expr -> evaluar expr `shouldBe` Right (Entero 11)
