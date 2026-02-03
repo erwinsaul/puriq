@@ -1,6 +1,6 @@
 module Main (main) where
 
-import Lib
+import Puriq.Repl (iniciarRepl)
 
 main :: IO ()
 main = do
@@ -9,5 +9,5 @@ main = do
 	putStrLn ""
 	someFunc
 	putStrLn ""
-	putStrLn "Usa 'puriw --ayuda' para más información"
+	putStrLn "Usa 'puriq --ayuda' para más información"
 

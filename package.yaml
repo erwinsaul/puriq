@@ -44,6 +44,14 @@ ghc-options:
 
 library:
   source-dirs: src
+  exposed-modules:
+    - Lib
+    - Puriq.Types
+    - Puriq.Lexer
+    - Puriq.Parser
+    - Puriq.Parser.Utils
+    - Puriq.Evaluator
+    - Puriq.Repl
 
 executables:
   puriq-exe:
