@@ -21,6 +21,7 @@ data Token
     | TokCadena String
     | TokBooleano Bool
     | TokIdentificador String
+    | TokPalabraReservada String
     | TokOperador String
     | TokParenIzq
     | TokParenDer
