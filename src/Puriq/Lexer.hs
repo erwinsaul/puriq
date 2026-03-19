@@ -37,7 +37,7 @@ tokenizarLista (c:cs)
                           in TokIdentificador identificador : tokenizarLista resto
 
                       -- Caracteres no reconocidos (error)
-                      | otherwise = []
+                      | otherwise = TokError c : tokenizarLista cs
 
 -- Funcion para leer números (enteros y decimales)
 leerNumero :: String -> (String, String)

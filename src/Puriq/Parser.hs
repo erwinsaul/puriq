@@ -160,11 +160,19 @@ factor = do
             advance
             expr <- factor
             return (ExpUnaria "-" expr)
+        TokError c -> Parser $ \_ -> Left (ErrorToken ("Carácter no reconocido: '" ++ [c] ++ "'"))
         _ -> Parser $ \_ -> Left (ErrorToken "Se esperaba un número, '(' o '-'")
             
 -- Función Auxiliar para parsear desde string (require lexer)
 parseFromString :: String -> ParseResult Expresion
-parseFromString input = parseExpression (tokenizar input)
+parseFromString input = runParser parserCompleto (tokenizar input)
+  where
+    parserCompleto = do
+        expr <- expresion
+        tok <- peek
+        case tok of
+            TokFin -> return expr
+            _      -> Parser $ \_ -> Left (ErrorToken "Se esperaba fin de expresión, hay texto extra")
 
 -- Función auxiliar para mostrar errores de manera amigable
 showParseError err = case err of

@@ -34,7 +34,7 @@ bucleRepl = do
             -- Continuar el bucle (LOOP)
             bucleRepl
 
-pocesarEntrada :: String -> IO ()
+procesarEntrada :: String -> IO ()
 procesarEntrada entrada 
     -- Ignorar las líneas vacías
     | null entrada = return ()
@@ -43,7 +43,7 @@ procesarEntrada entrada
         case parseFromString entrada of
             Left errorParser ->
                 -- Mostrar error de parsing
-                putStrLn $ "Error: " ++ ShowParseError errorParser
+                putStrLn $ "Error: " ++ showParseError errorParser
             Right expresion ->
                 -- Evaluar la expresión pareseada
                 case evaluar expresion of
@@ -66,5 +66,5 @@ mostrarValor Nulo = "nulo"
 mostrarErrorEval :: EvalError -> String
 mostrarErrorEval ErrorDivisionPorCero = "División por cero"
 mostrarErrorEval (ErrorOperadorDesconocido op) = "Operador desconocido: " ++ op
-mostrarErrorEval (ErrorTipoIncompatible msg) = "Tipo incompatible" ++ msg
-mostrarErrorEval (ErrorVariableNoDefinida var) = "Variable no definida:" ++ var
+mostrarErrorEval (ErrorTipoIncompatible msg) = "Tipo incompatible: " ++ msg
+mostrarErrorEval (ErrorVariableNoDefinida var) = "Variable no definida: " ++ var

@@ -24,6 +24,7 @@ data Token
     | TokOperador String
     | TokParenIzq
     | TokParenDer
+    | TokError Char
     | TokFin
     deriving (Show, Eq, Ord)
 
