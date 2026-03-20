@@ -3,8 +3,9 @@ module Puriq.Repl
    ) where
 
 import System.IO (hFlush, stdout)
+import qualified Data.Map.Strict as Map
 import Puriq.Parser (parseFromString, showParseError)
-import Puriq.Evaluator (evaluar, EvalError(..))
+import Puriq.Evaluator (evaluar, EvalError(..), Entorno)
 import Puriq.Types (Valor(..))
 
 iniciarRepl :: IO ()
@@ -12,47 +13,46 @@ iniciarRepl = do
     putStrLn "=== Puriq REPL V0.1.0 ==="
     putStrLn "Puedes probar expresiones matemáticas simples. Usa 'salir' para terminar."
     putStrLn ""
-    bucleRepl
+    bucleRepl Map.empty
 
 
-bucleRepl :: IO ()
-bucleRepl = do
+bucleRepl :: Entorno -> IO ()
+bucleRepl env = do
     -- Mostrar el prompt
     putStr "puriq> "
     hFlush stdout
 
     -- Leer entrada (READ
     entrada <- getLine
-
-    -- Verificar si quiere salir
-
     if entrada == "Salir" || entrada == "salir"
         then putStrLn "Adiós!"
         else do
-            -- Procesar la entrada
-            procesarEntrada entrada
-            -- Continuar el bucle (LOOP)
-            bucleRepl
+            env' <- procesarEntrada env entrada
+            bucleRepl env'
+ 
 
-procesarEntrada :: String -> IO ()
-procesarEntrada entrada 
+procesarEntrada :: Entorno -> String -> IO Entorno
+procesarEntrada env entrada 
     -- Ignorar las líneas vacías
-    | null entrada = return ()
+    | null entrada = return env
     | otherwise = 
         -- EVAL: Parsear y evaluar
         case parseFromString entrada of
-            Left errorParser ->
+            Left errorParser -> do
                 -- Mostrar error de parsing
                 putStrLn $ "Error: " ++ showParseError errorParser
+                return env
             Right expresion ->
                 -- Evaluar la expresión pareseada
-                case evaluar expresion of
-                    Left errorEval ->
+                case evaluar env expresion of
+                    Left errorEval -> do
                         -- Mostrar error de evaluación
                         putStrLn $ "Error: " ++ mostrarErrorEval errorEval
-                    Right resultado ->
+                        return env
+                    Right (resultado, env') -> do
                         -- PRINT: Mostrar resultado
                         putStrLn $ mostrarValor resultado
+                        return env'
 
 -- Mostrar un valor de forma legible
 mostrarValor :: Valor -> String

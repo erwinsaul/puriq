@@ -25,6 +25,7 @@ data Token
     | TokOperador String
     | TokParenIzq
     | TokParenDer
+    | TokIgual
     | TokError Char
     | TokFin
     deriving (Show, Eq, Ord)
@@ -33,6 +34,7 @@ data Token
 data Expresion
     = ExpLiteral Valor
     | ExpVariable String
+    | ExpAsignacion String Expresion
     | ExpBinaria String Expresion Expresion
     | ExpUnaria String Expresion
     deriving (Show, Eq, Ord)

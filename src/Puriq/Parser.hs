@@ -160,6 +160,27 @@ factor = do
             advance
             expr <- factor
             return (ExpUnaria "-" expr)
+        -- Cadenas de texto
+        TokCadena s -> do
+            advance
+            return (ExpLiteral (Cadena s))
+        -- Booleanos
+        TokBooleano b -> do
+            advance
+            return (ExpLiteral (Booleano b))
+
+        -- Variables (identificadores)
+        TokIdentificador nombre -> do
+            advance
+            siguiente <- peek
+            case siguiente of
+                TokIgual -> do
+                    advance
+                    expr <- expresion
+                    return (ExpAsignacion nombre expr)
+                _ ->
+                    return (ExpVariable nombre) 
+        
         TokError c -> Parser $ \_ -> Left (ErrorToken ("Carácter no reconocido: '" ++ [c] ++ "'"))
         _ -> Parser $ \_ -> Left (ErrorToken "Se esperaba un número, '(' o '-'")
             

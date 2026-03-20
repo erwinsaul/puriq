@@ -1,9 +1,13 @@
 module Puriq.Evaluator
   ( evaluar
   , EvalError(..)
+  , Entorno 
   ) where
 
 import Puriq.Types (Valor(..), Expresion(..))
+import qualified Data.Map.Strict as Map
+
+type Entorno = Map.Map String Valor
 
 data EvalError
   = ErrorDivisionPorCero
@@ -12,18 +16,25 @@ data EvalError
   | ErrorVariableNoDefinida String
   deriving (Show, Eq)
 
-evaluar :: Expresion -> Either EvalError Valor
-evaluar (ExpLiteral v) = Right v
-evaluar (ExpBinaria op izq der) = do
-  valorIzq <- evaluar izq
-  valorDer <- evaluar der
-  aplicarOperadorBinario op valorIzq valorDer
-evaluar (ExpUnaria op expr) = do
-  valor <- evaluar expr
-  aplicarOperadorUnario op valor
-evaluar (ExpVariable nombre) = do
-  Left (ErrorVariableNoDefinida nombre)
-
+evaluar :: Entorno -> Expresion -> Either EvalError (Valor, Entorno)
+evaluar env (ExpLiteral v) = Right (v, env)
+evaluar env (ExpVariable nombre) =
+  case Map.lookup nombre env of
+    Just v -> Right (v, env)
+    Nothing -> Left (ErrorVariableNoDefinida nombre)
+evaluar env (ExpAsignacion nombre expr) = do
+  (v, env') <- evaluar env expr
+  let env'' = Map.insert nombre v env'
+  return (v, env'')
+evaluar env (ExpBinaria op izq der) = do
+  (valorIzp, env') <- evaluar env izq
+  (valorDer, env'') <- evaluar env' der
+  resultado <- aplicarOperadorBinario op valorIzp valorDer
+  return (resultado, env'')
+evaluar env (ExpUnaria op expr) = do
+  (valor, env') <- evaluar env expr
+  resultado <- aplicarOperadorUnario op valor
+  return (resultado, env')
 -- Operacion Suma
 aplicarOperadorBinario :: String -> Valor -> Valor -> Either EvalError Valor
 aplicarOperadorBinario "+" (Entero a) (Entero b) = Right (Entero (a+b))
