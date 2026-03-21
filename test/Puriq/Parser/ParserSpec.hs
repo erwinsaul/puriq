@@ -135,4 +135,23 @@ spec = do
         let div' = binaria "/" (entero 4) (entero 2)
         let suma = binaria "+" mult div'
         let expected = binaria "-" suma (entero 1)
-        parseExpression tokens `shouldBe` Right expected                
+        parseExpression tokens `shouldBe` Right expected 
+
+    describe "Asignaciones" $ do
+      it "parsea asignación simple: x = 5" $ do
+        let tokens = [TokIdentificador "x", TokIgual, TokEntero 5, TokFin]              
+        parseExpression tokens `shouldBe` Right (ExpAsignacion "x" (ExpLiteral (Entero 5)))
+
+      it "parsea asignación con expresión: x = 2 + 3" $ do
+        let tokens = [TokIdentificador "x", TokIgual, TokEntero 2, TokOperador "+", TokEntero 3, TokFin]
+        let expected = ExpAsignacion "x" (ExpBinaria "+" (ExpLiteral (Entero 2)) (ExpLiteral (Entero 3)))
+        parseExpression tokens `shouldBe` Right expected
+
+      it "parsea identificar solo como variable: x" $ do
+        let tokens = [TokIdentificador "x", TokFin]
+        parseExpression tokens `shouldBe` Right (ExpVariable "x")
+      
+      it "parsea asignación desde string: parseFromString \"x = 5\"" $ do
+        parseFromString "x = 5" `shouldBe` Right (ExpAsignacion "x" (ExpLiteral (Entero 5)))
+    
+    
