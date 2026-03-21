@@ -1,5 +1,6 @@
 module Puriq.Repl
    ( iniciarRepl
+   , procesarEntrada
    ) where
 
 import System.IO (hFlush, stdout)
