@@ -119,3 +119,37 @@ spec = do
         case parseFromString "2 + 3 * (4 - 1)" of
           Left err -> expectationFailure $ "Error de parsing: " ++ show err
           Right expr -> evaluar Map.empty  expr `shouldBe` Right (Entero 11, Map.empty)
+    
+
+    describe "cadenas" $ do
+      it "evalúa literal cadena" $
+        case parseFromString "\"hola\"" of
+          Left err -> expectationFailure $ "Error de parsing: " ++ show err
+          Right expr -> evaluar Map.empty expr `shouldBe` Right (Cadena "hola", Map.empty)
+      
+      it "concatena dos cadenas" $
+        case parseFromString "\"hola\" + \"mundo\"" of
+          Left err -> expectationFailure $ "Error de parsing: " ++ show err
+          Right expr -> evaluar Map.empty expr `shouldBe` Right (Cadena "holamundo", Map.empty)
+    
+    describe "booleanos" $ do
+      it "evalua verdadero y verdadero" $
+        case parseFromString "verdadero y verdadero" of
+          Left err -> expectationFailure $ "Error de parsing: " ++ show err
+          Right expr -> evaluar Map.empty expr `shouldBe` Right (Booleano True, Map.empty)
+      
+      it "evalua verdadero y falso" $
+        case parseFromString "verdadero y falso" of
+          Left err -> expectationFailure $ "Error de parsing: " ++ show err
+          Right expr -> evaluar Map.empty expr `shouldBe` Right (Booleano False, Map.empty)
+      
+      it "evalua verdadero o falso" $
+        case parseFromString "verdadero o falso" of
+          Left err -> expectationFailure $ "Error de parsing: " ++ show err
+          Right expr -> evaluar Map.empty expr `shouldBe` Right (Booleano True, Map.empty)
+      
+      it "evalua no verdadero" $
+        case parseFromString "no verdadero" of
+          Left err -> expectationFailure $ "Error de parsing: " ++ show err
+          Right expr -> evaluar Map.empty expr `shouldBe` Right (Booleano False, Map.empty)
+  

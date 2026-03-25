@@ -107,8 +107,8 @@ clasificarPalabra "continuar" = TokPalabraReservada "continuar"
 clasificarPalabra "clase" = TokPalabraReservada "clase"
 clasificarPalabra "importar" = TokPalabraReservada "importar"
 clasificarPalabra "es" = TokPalabraReservada "es"
-clasificarPalabra "y" = TokPalabraReservada "y"
-clasificarPalabra "o" = TokPalabraReservada "o"
-clasificarPalabra "no" = TokPalabraReservada "no"
+clasificarPalabra "y" = TokOperador "y"
+clasificarPalabra "o" = TokOperador "o"
+clasificarPalabra "no" = TokOperador "no"
 clasificarPalabra palabra = TokIdentificador palabra
                       

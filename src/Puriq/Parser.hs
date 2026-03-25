@@ -98,11 +98,59 @@ consume expected msg = do
     then advance
     else Parser $ \_ -> Left (ErrorToken msg)
 
--- Gramática para expresiones Aritméticas:
--- expression -> termino (( "+" | "-") termino) *
+-- Gramática Puriq:
+-- expression -> disyuncion
+-- disyuncion -> conjuncion ( "o" conjuncion )*
+-- conjuncion -> negacion ( "y" negacion )*
+-- negacion -> "no" negacion | aritmetica
+-- aritmetica -> termino ("+" | "-" termino)*
+-- termino -> factor ("*" | "/" factor)*
 
 expresion :: Parser Expresion
-expresion = do
+expresion = disyuncion
+
+disyuncion :: Parser Expresion
+disyuncion = do
+    exp <- conjuncion
+    disyuncionResto exp
+
+disyuncionResto :: Expresion -> Parser Expresion
+disyuncionResto left = do
+    tok <- peek
+    case tok of
+        TokOperador "o" -> do
+            advance
+            right <- conjuncion
+            disyuncionResto (ExpBinaria "o" left right)
+        _ -> return left
+
+conjuncion :: Parser Expresion
+conjuncion = do
+    exp <- negacion
+    conjuncionResto exp
+
+conjuncionResto :: Expresion -> Parser Expresion
+conjuncionResto left = do
+    tok <- peek
+    case tok of
+        TokOperador "y" -> do
+            advance
+            right <- negacion
+            conjuncionResto (ExpBinaria "y" left right)
+        _ -> return left
+
+negacion :: Parser Expresion
+negacion = do
+    tok <- peek
+    case tok of
+        TokOperador "no" -> do
+            advance
+            expr <- negacion
+            return (ExpUnaria "no" expr)
+        _ -> aritmetica
+
+aritmetica :: Parser Expresion
+aritmetica = do
     exp <- termino
     expresionResto exp
 

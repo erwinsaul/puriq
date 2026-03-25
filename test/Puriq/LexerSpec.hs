@@ -34,4 +34,28 @@ spec = do
       it "maneja múltiples espacios" $ do
         tokenizar "2  +  3" `shouldBe` [TokEntero 2, TokOperador "+", TokEntero 3, TokFin]
         --pending
+    
+    describe "cadenas" $ do
+      it "tokeniza cadena con comillas dobles" $
+        tokenizar "\"hola\"" `shouldBe` [TokCadena "hola", TokFin]
+      
+      it "tokeniza cadena con comillas simples" $
+        tokenizar "'hola'" `shouldBe` [TokCadena "hola", TokFin]
+    
+    describe "booleanos" $ do
+      it "tokeniza verdadero" $
+        tokenizar "verdadero" `shouldBe` [TokBooleano True, TokFin]
+
+      it "tokeniza falso" $
+        tokenizar "falso" `shouldBe` [TokBooleano False, TokFin]
+
+      it "tokeniza operador y" $
+        tokenizar "y" `shouldBe` [TokOperador "y", TokFin]
+
+      it "tokeniza operador o" $
+        tokenizar "o" `shouldBe` [TokOperador "o", TokFin]
+
+      it "tokeniza operador no" $
+        tokenizar "no" `shouldBe` [TokOperador "no", TokFin]
+    
         

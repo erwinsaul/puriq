@@ -41,6 +41,7 @@ aplicarOperadorBinario "+" (Entero a) (Entero b) = Right (Entero (a+b))
 aplicarOperadorBinario "+" (Decimal a) (Decimal b) = Right (Decimal (a+b))
 aplicarOperadorBinario "+" (Entero a) (Decimal b) = Right (Decimal (fromIntegral a + b))
 aplicarOperadorBinario "+" (Decimal a) (Entero b) = Right (Decimal (a + fromIntegral b))
+aplicarOperadorBinario "+" (Cadena a) (Cadena b) = Right (Cadena (a ++ b))
 
 -- Operacion Resta
 aplicarOperadorBinario "-" (Entero a) (Entero b) = Right (Entero (a-b))
@@ -62,13 +63,22 @@ aplicarOperadorBinario "/" (Decimal a) (Decimal b) = Right (Decimal (a/b))
 aplicarOperadorBinario "/" (Entero a) (Decimal b) = Right (Decimal (fromIntegral a / b))
 aplicarOperadorBinario "/" (Decimal a) (Entero b) = Right (Decimal (a / fromIntegral b))
 
+-- Operadores lógicos
+aplicarOperadorBinario "y" (Booleano a) (Booleano b) = Right (Booleano (a && b))
+aplicarOperadorBinario "o" (Booleano a) (Booleano b) = Right (Booleano (a || b))
+
 -- En caso de que el operador no sea reconocido
+aplicarOperadorBinario op (Cadena _) (Cadena _) = Left (ErrorTipoIncompatible ("Operador '" ++ op ++ "' no válido para cadenas"))
+aplicarOperadorBinario op (Booleano _) (Booleano _) = Left (ErrorTipoIncompatible ("Operador '" ++ op ++ "' no válido para booleanos"))
 aplicarOperadorBinario op _ _ = Left (ErrorOperadorDesconocido op)
 
 aplicarOperadorUnario :: String -> Valor -> Either EvalError Valor
 aplicarOperadorUnario "-" (Entero n) = Right (Entero (-n))
 aplicarOperadorUnario "-" (Decimal n) = Right (Decimal (-n))
+aplicarOperadorUnario "no" (Booleano b) = Right (Booleano (not b))
+
 aplicarOperadorUnario op _ = Left (ErrorOperadorDesconocido op)
+
 
 
 

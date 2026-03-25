@@ -154,4 +154,24 @@ spec = do
       it "parsea asignación desde string: parseFromString \"x = 5\"" $ do
         parseFromString "x = 5" `shouldBe` Right (ExpAsignacion "x" (ExpLiteral (Entero 5)))
     
+    describe "Cadenas" $ do
+      it "parsea cadena literal" $ do
+        parseFromString "\"hola\"" `shouldBe` Right (ExpLiteral (Cadena "hola"))
+    
+    describe "Booleanos" $ do
+      it "parsea verdadero" $ 
+        parseFromString "verdadero" `shouldBe` Right (ExpLiteral (Booleano True))
+
+      it "parsea falso" $ 
+        parseFromString "falso" `shouldBe` Right (ExpLiteral (Booleano False))
+      
+      it "parsea conjuncion: verdadero y falso" $
+        parseFromString "verdadero y falso" `shouldBe` Right (ExpBinaria "y" (ExpLiteral (Booleano True)) (ExpLiteral (Booleano False)))
+
+      it "parsea disyuncion: verdadero o falso" $
+        parseFromString "verdadero o falso" `shouldBe` Right (ExpBinaria "o" (ExpLiteral (Booleano True)) (ExpLiteral (Booleano False)))
+      
+      it "parsea negacion: no verdadero" $
+        parseFromString "no verdadero" `shouldBe` Right (ExpUnaria "no" (ExpLiteral (Booleano True))) 
+  
     
