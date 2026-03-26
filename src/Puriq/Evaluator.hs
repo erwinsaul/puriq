@@ -67,6 +67,45 @@ aplicarOperadorBinario "/" (Decimal a) (Entero b) = Right (Decimal (a / fromInte
 aplicarOperadorBinario "y" (Booleano a) (Booleano b) = Right (Booleano (a && b))
 aplicarOperadorBinario "o" (Booleano a) (Booleano b) = Right (Booleano (a || b))
 
+-- Operdaores de comparacion numérica (Entero Vs Entero)
+aplicarOperadorBinario "==" (Entero a) (Entero b) = Right (Booleano (a == b))
+aplicarOperadorBinario "!=" (Entero a) (Entero b) = Right (Booleano (a /= b))
+aplicarOperadorBinario "<"  (Entero a) (Entero b) = Right (Booleano (a < b))
+aplicarOperadorBinario ">"  (Entero a) (Entero b) = Right (Booleano (a > b))
+aplicarOperadorBinario "<=" (Entero a) (Entero b) = Right (Booleano (a <= b))
+aplicarOperadorBinario ">=" (Entero a) (Entero b) = Right (Booleano (a >= b))
+
+-- Operadores de comparacion numérica (Decimal Vs Decimal)
+aplicarOperadorBinario "==" (Decimal a) (Decimal b) = Right (Booleano (a == b))
+aplicarOperadorBinario "!=" (Decimal a) (Decimal b) = Right (Booleano (a /= b))
+aplicarOperadorBinario "<"  (Decimal a) (Decimal b) = Right (Booleano (a < b))
+aplicarOperadorBinario ">"  (Decimal a) (Decimal b) = Right (Booleano (a > b))
+aplicarOperadorBinario "<=" (Decimal a) (Decimal b) = Right (Booleano (a <= b))
+aplicarOperadorBinario ">=" (Decimal a) (Decimal b) = Right (Booleano (a >= b))
+
+-- Operadores de comparacion numerica (Entero VS Decimal y viceversa)
+aplicarOperadorBinario "==" (Entero a) (Decimal b) = Right (Booleano (fromIntegral a == b))
+aplicarOperadorBinario "!=" (Entero a) (Decimal b) = Right (Booleano (fromIntegral a /= b))
+aplicarOperadorBinario "<"  (Entero a) (Decimal b) = Right (Booleano (fromIntegral a < b))
+aplicarOperadorBinario ">"  (Entero a) (Decimal b) = Right (Booleano (fromIntegral a > b))
+aplicarOperadorBinario "<=" (Entero a) (Decimal b) = Right (Booleano (fromIntegral a <= b))
+aplicarOperadorBinario ">=" (Entero a) (Decimal b) = Right (Booleano (fromIntegral a >= b))
+
+aplicarOperadorBinario "==" (Decimal a) (Entero b) = Right (Booleano (a == fromIntegral b))
+aplicarOperadorBinario "!=" (Decimal a) (Entero b) = Right (Booleano (a /= fromIntegral b))
+aplicarOperadorBinario "<"  (Decimal a) (Entero b) = Right (Booleano (a < fromIntegral b))
+aplicarOperadorBinario ">"  (Decimal a) (Entero b) = Right (Booleano (a > fromIntegral b))
+aplicarOperadorBinario "<=" (Decimal a) (Entero b) = Right (Booleano (a <= fromIntegral b))
+aplicarOperadorBinario ">=" (Decimal a) (Entero b) = Right (Booleano (a >= fromIntegral b))
+
+-- Igualdad entre cadenas
+aplicarOperadorBinario "==" (Cadena a) (Cadena b) = Right (Booleano (a == b))
+aplicarOperadorBinario "!=" (Cadena a) (Cadena b) = Right (Booleano (a /= b))
+
+-- Igualdad entre booleanos
+aplicarOperadorBinario "==" (Booleano a) (Booleano b) = Right (Booleano (a == b))
+aplicarOperadorBinario "!=" (Booleano a) (Booleano b) = Right (Booleano (a /= b))
+
 -- En caso de que el operador no sea reconocido
 aplicarOperadorBinario op (Cadena _) (Cadena _) = Left (ErrorTipoIncompatible ("Operador '" ++ op ++ "' no válido para cadenas"))
 aplicarOperadorBinario op (Booleano _) (Booleano _) = Left (ErrorTipoIncompatible ("Operador '" ++ op ++ "' no válido para booleanos"))

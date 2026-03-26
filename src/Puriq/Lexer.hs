@@ -27,8 +27,21 @@ tokenizarLista (c:cs)
                       | c =='-' = TokOperador "-" : tokenizarLista cs
                       | c =='*' = TokOperador "*" : tokenizarLista cs
                       | c =='/' = TokOperador "/" : tokenizarLista cs
-                      -- Asignacion
-                      | c =='=' = TokIgual : tokenizarLista cs
+                      -- Asignacion - Igualdad
+                      | c == '=' && not (null cs) && head cs == '=' =
+                          TokOperador "==" : tokenizarLista (tail cs)
+                      | c == '=' = TokIgual : tokenizarLista cs
+                      -- Distinto (!=)
+                      | c == '!' && not ( null cs) && head cs == '=' =
+                        TokOperador "!=" : tokenizarLista (tail cs)
+                      -- Menor / Menor o igual
+                      | c == '<' && not (null cs) && head cs == '=' =
+                        TokOperador "<=" : tokenizarLista (tail cs)
+                      | c == '<' = TokOperador "<" : tokenizarLista cs
+                      -- Mayor / Mayor o igual
+                      | c == '>' && not (null cs) && head cs == '=' =                        
+                        TokOperador ">=" : tokenizarLista (tail cs)
+                      | c == '>' = TokOperador ">" : tokenizarLista cs
                       -- Parentesis
                       | c =='(' = TokParenIzq : tokenizarLista cs
                       | c == ')' = TokParenDer : tokenizarLista cs

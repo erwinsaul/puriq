@@ -103,6 +103,7 @@ consume expected msg = do
 -- disyuncion -> conjuncion ( "o" conjuncion )*
 -- conjuncion -> negacion ( "y" negacion )*
 -- negacion -> "no" negacion | aritmetica
+-- comparacion -> aritmetica ( ("==" | "!=" | ">" | ">" | "<=" | ">=") aritmetica)?
 -- aritmetica -> termino ("+" | "-" termino)*
 -- termino -> factor ("*" | "/" factor)*
 
@@ -147,7 +148,18 @@ negacion = do
             advance
             expr <- negacion
             return (ExpUnaria "no" expr)
-        _ -> aritmetica
+        _ -> comparacion
+
+comparacion :: Parser Expresion
+comparacion = do
+    izq <- aritmetica
+    tok <- peek
+    case tok of
+        TokOperador op | op `elem` ["==", "!=", "<=", ">=", "<", ">"] -> do
+            advance
+            der <- aritmetica
+            return (ExpBinaria op izq der)
+        _ -> return izq
 
 aritmetica :: Parser Expresion
 aritmetica = do
