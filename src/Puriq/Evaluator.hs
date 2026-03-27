@@ -35,6 +35,15 @@ evaluar env (ExpUnaria op expr) = do
   (valor, env') <- evaluar env expr
   resultado <- aplicarOperadorUnario op valor
   return (resultado, env')
+evaluar env(ExpSi condicion entonces mSino) = do
+  (valCond, env') <- evaluar env condicion
+  case valCond of
+    Booleano True -> evaluar env' entonces
+    Booleano False -> case mSino of
+      Just siNo -> evaluar env' siNo
+      Nothing -> Right (Nulo, env')
+    _ -> Left (ErrorTipoIncompatible "La condicion del 'si' debe ser booleana")
+    
 -- Operacion Suma
 aplicarOperadorBinario :: String -> Valor -> Valor -> Either EvalError Valor
 aplicarOperadorBinario "+" (Entero a) (Entero b) = Right (Entero (a+b))

@@ -45,6 +45,7 @@ tokenizarLista (c:cs)
                       -- Parentesis
                       | c =='(' = TokParenIzq : tokenizarLista cs
                       | c == ')' = TokParenDer : tokenizarLista cs
+                      | c == ':' = TokDosPuntos : tokenizarLista cs
                       -- Cadenas con comillas dobles
                       | c == '"' =
                         let (cadena, resto) = leerCadena '"' cs

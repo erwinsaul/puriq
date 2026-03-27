@@ -108,7 +108,47 @@ consume expected msg = do
 -- termino -> factor ("*" | "/" factor)*
 
 expresion :: Parser Expresion
-expresion = disyuncion
+expresion = do
+    tok <- peek
+    case tok of
+        TokPalabraReservada "si" -> parsearSi
+        _ -> disyuncion
+
+parsearSi :: Parser Expresion
+parsearSi = do
+    advance
+    condicion <- disyuncion
+    consume TokDosPuntos "Se esperaba ':' después de 'si'"
+    entonces <- disyuncion
+    tok <- peek
+    case tok of
+        TokPalabraReservada "sino_si" -> do
+            ramaSiNo <- parsearSiNo
+            return (ExpSi condicion entonces (Just ramaSiNo))
+        TokPalabraReservada "sino" -> do
+            advance
+            consume TokDosPuntos "Se esperaba ':' después de 'sino'"
+            siNo <- disyuncion
+            return (ExpSi condicion entonces (Just siNo))
+        _ -> return (ExpSi condicion entonces Nothing)    
+
+parsearSiNo :: Parser Expresion
+parsearSiNo = do
+    advance
+    condicion <- disyuncion
+    consume TokDosPuntos "Se esperaba ':' después de 'sino_si'"
+    entonces <- disyuncion
+    tok <- peek
+    case tok of
+        TokPalabraReservada "sino_si" -> do
+            siguiente <- parsearSiNo
+            return (ExpSi condicion entonces (Just siguiente))
+        TokPalabraReservada "sino" -> do
+            advance
+            consume TokDosPuntos "Se esperaba ':' después de 'sino'"
+            siNo <- disyuncion
+            return (ExpSi condicion entonces (Just siNo))
+        _ -> return (ExpSi condicion entonces Nothing)
 
 disyuncion :: Parser Expresion
 disyuncion = do

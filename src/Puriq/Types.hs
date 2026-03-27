@@ -26,6 +26,7 @@ data Token
     | TokParenIzq
     | TokParenDer
     | TokIgual
+    | TokDosPuntos
     | TokError Char
     | TokFin
     deriving (Show, Eq, Ord)
@@ -37,4 +38,5 @@ data Expresion
     | ExpAsignacion String Expresion
     | ExpBinaria String Expresion Expresion
     | ExpUnaria String Expresion
+    | ExpSi Expresion Expresion (Maybe Expresion)
     deriving (Show, Eq, Ord)
