@@ -152,4 +152,38 @@ spec = do
         case parseFromString "no verdadero" of
           Left err -> expectationFailure $ "Error de parsing: " ++ show err
           Right expr -> evaluar Map.empty expr `shouldBe` Right (Booleano False, Map.empty)
+    
+    describe "condicionales" $ do
+      it "evalua si verdadero: retorna rama entonces" $
+        case parseFromString "si verdadero: 1" of
+          Left err -> expectationFailure $ "Error de parsing: " ++ show err
+          Right expr -> evaluar Map.empty expr `shouldBe` Right (Entero 1, Map.empty)
+
+      it "evalua si falso sin sino: retorna Nulo" $
+        case parseFromString "si falso: 1" of
+          Left err -> expectationFailure $ "Error de parsing: " ++ show err
+          Right expr -> evaluar Map.empty expr `shouldBe` Right (Nulo, Map.empty)
+
+      it "evalua si falso con sino: retorna rama sino" $
+        case parseFromString "si falso: 1 sino: 2" of
+          Left err -> expectationFailure $ "Error de parsing: " ++ show err
+          Right expr -> evaluar Map.empty expr `shouldBe` Right (Entero 2, Map.empty)
+      
+      it "evalua sino_si encadenado" $
+        case parseFromString "si falso: 1 sino_si verdadero: 2 sino: 3" of
+          Left err -> expectationFailure $ "Error de parsing: " ++ show err
+          Right expr -> evaluar Map.empty expr `shouldBe` Right (Entero 2, Map.empty)
+      
+      it "evalua con condicion con expresion: si 3 > 2: 10" $
+        case parseFromString "si 3 > 2: 10" of
+          Left err -> expectationFailure $ "Error de parsing: " ++ show err
+          Right expr -> evaluar Map.empty expr `shouldBe` Right (Entero 10, Map.empty)
+      
+      it "falla si la condición no es booleana" $
+        case parseFromString "si 3: 10" of
+          Left err -> expectationFailure $ "Error de parsing: " ++ show err
+          Right expr -> evaluar Map.empty expr `shouldBe` 
+            Left (ErrorTipoIncompatible "La condicion del 'si' debe ser booleana")
+            
+
   

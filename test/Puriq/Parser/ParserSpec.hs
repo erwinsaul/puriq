@@ -173,5 +173,31 @@ spec = do
       
       it "parsea negacion: no verdadero" $
         parseFromString "no verdadero" `shouldBe` Right (ExpUnaria "no" (ExpLiteral (Booleano True))) 
-  
+    
+    describe "Condicionales si/sino/sino_si" $ do
+      it "parsea si simple sin sino" $
+        parseFromString "si verdadero: 1" `shouldBe`
+          Right (ExpSi (ExpLiteral (Booleano True))
+                       (ExpLiteral (Entero 1))
+                       Nothing)
+      
+      it "parsea si con sino" $
+        parseFromString "si verdadero: 1 sino: 2" `shouldBe`
+          Right (ExpSi (ExpLiteral (Booleano True))
+                        (ExpLiteral (Entero 1))
+                        (ExpLiteral (Entero 2)))
+      
+      it "parsea si con sino_si y sino" $
+        parseFromString "si falso: 1 sino_si verdadero: 2 sino: 3" `shouldBe`
+          Right (ExpSi (ExpLiteral (Booleano False))
+                        (ExpLiteral (Entero 1))
+                        (Just (ExpSi (ExpLiteral (Booleano True))
+                                    (ExpLiteral (Entero 2))
+                                    (Just (ExpLiteral (Entero 3))))))
+      
+      it "parsea condicion con comparacion" $
+        parseFromString "si 1 == 1: 42" `shouldBe`
+          Right (ExpSi (ExpBinaria "==" (ExpLiteral (Entero 1)) (ExpLiteral (Entero 1)))
+                        (ExpLiteral (Entero 42))
+                        Nothing)
     
