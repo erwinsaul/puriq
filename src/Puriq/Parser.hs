@@ -223,7 +223,7 @@ expresionResto left = do
 -- termino -> factor ( ( "*" | "/") factor)*
 termino :: Parser Expresion
 termino = do
-    expr <- factor
+    expr <- unario
     terminoResto expr
 
 terminoResto :: Expresion -> Parser Expresion
@@ -249,6 +249,31 @@ potencia = do
         TokOperador "**" -> do
             advance
             der <- potencia
+            return (ExpBinaria "**" izq der)
+        _ -> return izq
+
+unario :: Parser Expresion
+unario = do
+    tok <- peek
+    case tok of
+        TokOperador "-" -> do
+            advance
+            expr <- unario
+            return (ExpUnaria "-" expr)
+        TokOperador "no" -> do
+            advance
+            expr <- unario
+            return (ExpUnaria "no" expr)
+        _ -> potencia 
+
+potencia :: Parser Expresion
+potencia = do
+    izq <- primario 
+    tok <- peek
+    case tok of
+        TokOperador "**" -> do
+            advance
+            der <- unario
             return (ExpBinaria "**" izq der)
         _ -> return izq
 
