@@ -43,7 +43,10 @@ evaluar env(ExpSi condicion entonces mSino) = do
       Just siNo -> evaluar env' siNo
       Nothing -> Right (Nulo, env')
     _ -> Left (ErrorTipoIncompatible "La condicion del 'si' debe ser booleana")
-    
+
+evaluar env (ExpImprimir expr) = evaluar env expr
+
+
 -- Operacion Suma
 aplicarOperadorBinario :: String -> Valor -> Valor -> Either EvalError Valor
 aplicarOperadorBinario "+" (Entero a) (Entero b) = Right (Entero (a+b))

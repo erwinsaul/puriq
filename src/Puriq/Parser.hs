@@ -280,7 +280,13 @@ factor = do
                     return (ExpAsignacion nombre expr)
                 _ ->
                     return (ExpVariable nombre) 
-        
+        TokPalabraReservada "imprimir" -> do
+            advance
+            consume TokParenIzq "Se esperaba '(' despues de 'imprimir'"
+            exp <- expresion
+            consume TokParenDer "Se esperaba ')' despues de la expresion"
+            return (ExpImprimir expr)
+                    
         TokError c -> Parser $ \_ -> Left (ErrorToken ("Carácter no reconocido: '" ++ [c] ++ "'"))
         _ -> Parser $ \_ -> Left (ErrorToken "Se esperaba un número, '(' o '-'")
             

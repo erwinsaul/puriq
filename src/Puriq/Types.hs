@@ -39,4 +39,5 @@ data Expresion
     | ExpBinaria String Expresion Expresion
     | ExpUnaria String Expresion
     | ExpSi Expresion Expresion (Maybe Expresion)
+    | ExpImprimir Expresion
     deriving (Show, Eq, Ord)

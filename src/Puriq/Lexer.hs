@@ -125,5 +125,6 @@ clasificarPalabra "es" = TokPalabraReservada "es"
 clasificarPalabra "y" = TokOperador "y"
 clasificarPalabra "o" = TokOperador "o"
 clasificarPalabra "no" = TokOperador "no"
+clasificarPalabra "imprimir" = TokPalabraReservada "imprimir"
 clasificarPalabra palabra = TokIdentificador palabra
                       
