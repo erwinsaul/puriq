@@ -185,7 +185,7 @@ spec = do
         parseFromString "si verdadero: 1 sino: 2" `shouldBe`
           Right (ExpSi (ExpLiteral (Booleano True))
                         (ExpLiteral (Entero 1))
-                        (ExpLiteral (Entero 2)))
+                        (Just (ExpLiteral (Entero 2))))
       
       it "parsea si con sino_si y sino" $
         parseFromString "si falso: 1 sino_si verdadero: 2 sino: 3" `shouldBe`

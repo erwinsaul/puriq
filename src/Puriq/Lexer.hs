@@ -16,7 +16,8 @@ tokenizarLista "" = []
 tokenizarLista (c:cs) 
                       -- Ignorar Espacios en blanco
                       | isSpace c = tokenizarLista cs
-
+                      -- Ignorara Comentarios
+                      | c == '#' = tokenizarLista (dropWhile (/= '\n') cs)
                       -- Numeros(enteros y decimales)
                       | isDigit c = 
                             let (numeroStr, resto) = leerNumero (c:cs)
