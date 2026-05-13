@@ -240,6 +240,18 @@ terminoResto left = do
             terminoResto (ExpBinaria "/" left right)
         _ -> return left
 
+-- potencia -> factor ("**" potencia)?
+potencia :: Parser Expresion
+potencia = do
+    izq <- factor
+    tok <- peek
+    case tok of
+        TokOperador "**" -> do
+            advance
+            der <- potencia
+            return (ExpBinaria "**" izq der)
+        _ -> return izq
+
 -- factor -> NUMERO | "(" expresion ")" | "-" factor
 factor :: Parser Expresion
 factor = do
@@ -286,7 +298,7 @@ factor = do
             exp <- expresion
             consume TokParenDer "Se esperaba ')' despues de la expresion"
             return (ExpImprimir expr)
-                    
+
         TokError c -> Parser $ \_ -> Left (ErrorToken ("Carácter no reconocido: '" ++ [c] ++ "'"))
         _ -> Parser $ \_ -> Left (ErrorToken "Se esperaba un número, '(' o '-'")
             

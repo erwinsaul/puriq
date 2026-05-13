@@ -67,6 +67,12 @@ aplicarOperadorBinario "*" (Decimal a) (Decimal b) = Right (Decimal (a*b))
 aplicarOperadorBinario "*" (Entero a) (Decimal b) = Right (Decimal (fromIntegral a * b))
 aplicarOperadorBinario "*" (Decimal a) (Entero b) = Right (Decimal (a*fromIntegral b))
 
+-- Operacion Potencia
+aplicarOperadorBinario "**" (Entero a) (Entero b) = Right (Entero (a^b))
+aplicarOperadorBinario "**" (Decimal a) (Decimal b) = Right (Decimal (a ** b))
+aplicarOperadorBinario "**" (Entero a) (Decimal b) = Right (Decimal (fromIntegral a ** b))
+aplicarOperadorBinario "**" (Decimal a) (Entero b) = Right (Decimal (a ** fromIntegral b))
+
 -- Operación División
 aplicarOperadorBinario "/" _ (Entero 0) = Left ErrorDivisionPorCero
 aplicarOperadorBinario "/" _ (Decimal 0.0) = Left ErrorDivisionPorCero
