@@ -240,18 +240,6 @@ terminoResto left = do
             terminoResto (ExpBinaria "/" left right)
         _ -> return left
 
--- potencia -> factor ("**" potencia)?
-potencia :: Parser Expresion
-potencia = do
-    izq <- factor
-    tok <- peek
-    case tok of
-        TokOperador "**" -> do
-            advance
-            der <- potencia
-            return (ExpBinaria "**" izq der)
-        _ -> return izq
-
 unario :: Parser Expresion
 unario = do
     tok <- peek
@@ -268,7 +256,7 @@ unario = do
 
 potencia :: Parser Expresion
 potencia = do
-    izq <- primario 
+    izq <- factor 
     tok <- peek
     case tok of
         TokOperador "**" -> do

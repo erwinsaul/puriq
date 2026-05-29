@@ -26,7 +26,7 @@ tokenizarLista (c:cs)
                       -- Operadores aritméticos
                       | c =='+' = TokOperador "+" : tokenizarLista cs
                       | c =='-' = TokOperador "-" : tokenizarLista cs
-                      | c == '*' && no (null cs) && head cs == '*' = TokOperador "**" : tokenizarLista (tail cs) 
+                      | c == '*' && not (null cs) && head cs == '*' = TokOperador "**" : tokenizarLista (tail cs) 
                       | c =='*' = TokOperador "*" : tokenizarLista cs
                       | c =='/' = TokOperador "/" : tokenizarLista cs
                       -- Asignacion - Igualdad
